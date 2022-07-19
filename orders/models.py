@@ -18,7 +18,7 @@ class Cart(TimeStampModel):
 
 class Order(TimeStampModel):
     order_number = models.CharField(max_length=100)
-    user         = models.ForeignKey('users.User', on_delete=models.SET_NULL)
+    user         = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True)
     status       = models.ForeignKey('Status', on_delete=models.CASCADE)
 
     class Meta:
