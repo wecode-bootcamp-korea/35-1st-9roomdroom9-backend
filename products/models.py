@@ -14,7 +14,6 @@ class Product(TimeStampModel):
     price    = models.DecimalField(max_digits=15, decimal_places=2)
     is_green = models.BooleanField(default=False)
     is_best  = models.BooleanField(default=False)
-    stock    = models.IntegerField()
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
 
     class Meta:
@@ -28,8 +27,15 @@ class ProductImage(models.Model):
         db_table = 'product_images'
 
 class Option(models.Model):
-    name    = models.CharField(max_length=50)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'options'
+
+class ProductOption(models.Model):
+    stock   = models.IntegerField()
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    option  = models.ForeignKey('Option', on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'products_options'

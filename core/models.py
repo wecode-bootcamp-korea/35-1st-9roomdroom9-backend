@@ -1,4 +1,3 @@
-from abc import abstractclassmethod
 from django.db import models
 
 class TimeStampModel(models.Model):

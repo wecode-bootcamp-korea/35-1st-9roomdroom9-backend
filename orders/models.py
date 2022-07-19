@@ -9,26 +9,26 @@ class Status(models.Model):
         db_table = 'statuses'
 
 class Cart(TimeStampModel):
-    quantity = models.IntegerField()
-    user     = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    option   = models.ForeignKey('products.Option', on_delete=models.CASCADE)
+    quantity       = models.IntegerField()
+    user           = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    product_option = models.ForeignKey('products.ProductOption', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'carts'
 
 class Order(TimeStampModel):
     order_number = models.CharField(max_length=100)
-    user         = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    user         = models.ForeignKey('users.User', on_delete=models.SET_NULL)
     status       = models.ForeignKey('Status', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'orders'
 
 class OrderItem(TimeStampModel):
-    quantity = models.IntegerField()
-    product  = models.ForeignKey('products.Product', on_delete=models.CASCADE)
-    order    = models.ForeignKey('Order', on_delete=models.CASCADE)
-    status   = models.ForeignKey('Status', on_delete=models.CASCADE)
+    quantity       = models.IntegerField()
+    product_option = models.ForeignKey('products.ProductOption', on_delete=models.CASCADE)
+    order          = models.ForeignKey('Order', on_delete=models.CASCADE)
+    status         = models.ForeignKey('Status', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'order_items'
