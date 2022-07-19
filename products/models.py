@@ -28,6 +28,7 @@ class ProductImage(models.Model):
 
 class Option(models.Model):
     name = models.CharField(max_length=50)
+    product = models.ManyToManyField('Product', through='ProductOption', related_name='option')
 
     class Meta:
         db_table = 'options'
