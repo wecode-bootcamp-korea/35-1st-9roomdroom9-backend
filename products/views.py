@@ -15,7 +15,7 @@ class ProductListView(View):
             image_list = []
 
             for image in images:
-                image_list.append({'img_url' : image.url})
+                image_list.append(image.url)
 
             product_information = {
                 'id'      : product.id,
