@@ -23,19 +23,14 @@ class ProductListView(View):
         result.append({'total': products.count()})
 
         for product in products:
-            images     = product.productimage_set.all()
-            image_list = []
-
-            for image in images:
-                image_list.append(image.url)
-
+            images = product.productimage_set.all()
             product_information = {
                 'id'      : product.id,
                 'name'    : product.name,
                 'price'   : product.price,
                 'is_green': product.is_green,
                 'is_best' : product.is_best,
-                'img_urls': image_list,
+                'img_urls': [image.url for image in images]
             }
             result.append(product_information)
 
