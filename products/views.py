@@ -24,7 +24,7 @@ class ProductListView(View):
                 'is_green': product.is_green,
                 'is_best' : product.is_best,
                 'img_urls': image_list,
-                'total' : products.count()
+                'total'   : products.count()
             }
             result.append(product_information)
 
