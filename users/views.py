@@ -14,10 +14,10 @@ class SignUpView(View):
         try:
             data          = json.loads(request.body)
             name          = data['name']
+            email         = data['email']
             password      = data['password']
             birthday      = data['birthday']   
             mobile_number = data['mobile_number']
-            email         = data['email']
 
             if not re.match('^[a-zA-Z0-9+-_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
                 return JsonResponse({'message': 'Email format is not valid'}, status=400)
