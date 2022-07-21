@@ -23,7 +23,8 @@ class ProductListView(View):
                 'price'   : product.price,
                 'is_green': product.is_green,
                 'is_best' : product.is_best,
-                'img_urls': image_list
+                'img_urls': image_list,
+                'total' : products.count()
             }
             result.append(product_information)
 
