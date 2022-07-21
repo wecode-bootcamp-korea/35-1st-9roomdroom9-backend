@@ -19,7 +19,7 @@ class ProductListView(View):
 
             if not Category.objects.filter(id=cat_id).exists():
                 return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
-           
+
         result.append({'total': products.count()})
 
         for product in products:
