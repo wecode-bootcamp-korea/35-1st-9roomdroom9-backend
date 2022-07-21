@@ -33,10 +33,10 @@ class SignUpView(View):
                 return JsonResponse({'message':'Phone format must be in 01X-XXXX-XXXX'}, status=400)
 
             if User.objects.filter(email=data.get('email')).exists() and data.get('email') != None:
-                return JsonResponse({'MESSAGE': 'ALREADY_EXISTS_EMAIL'}, status = 400)
+                return JsonResponse({'message': 'ALREADY_EXISTS_EMAIL'}, status = 400)
             
             if User.objects.filter(mobile_number=data.get('mobile_number')).exists() and data.get('mobile_number') != None:
-                return JsonResponse({'MESSAGE': 'ALREADY_EXISTS_MOBILE_NUMBER'}, status = 400)
+                return JsonResponse({'message': 'ALREADY_EXISTS_MOBILE_NUMBER'}, status = 400)
 
             hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -64,7 +64,7 @@ class LoginView(View):
             encoded_password = password.encode('utf-8')
 
             if not bcrypt.checkpw(encoded_password, user_password.encode('utf-8')):
-                return JsonResponse({"message": "INVALID_USER"}, status=401)
+                return JsonResponse({'message': 'INVALID_USER'}, status=401)
 
             token = jwt.encode({'id': user.id}, settings.SECRET_KEY, settings.ALGORITHM)
 
@@ -74,4 +74,4 @@ class LoginView(View):
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
 
         except User.DoesNotExist:
-            return JsonResponse({"message": "INVALID_USER"}, status=401)
+            return JsonResponse({'message': 'INVALID_USER'}, status=401)
