@@ -5,9 +5,10 @@ import bcrypt
 import jwt
 from django.http  import JsonResponse
 from django.views import View
+from django.conf  import settings
+
 
 from .models import User
-from django.conf import settings
 
 class SignUpView(View):
     def post(self, request):
