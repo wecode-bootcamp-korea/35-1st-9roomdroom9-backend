@@ -24,7 +24,7 @@ class SignUpView(View):
             if not re.match('^(?=.*[A-Za-z])(?=.*\d)(?=.*[?!@#$%*&])[A-Za-z\d?!@#$%*&]{8,}$', password):
                 return JsonResponse({'message': 'Password format is not valid'}, status=400)
             
-            if not re.match('^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$', birthday):
+            if not re.match('^(19[0-9][0-9]|20\d{2})-(0[0-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$', birthday):
                 return JsonResponse({'message':'Date format must be in YYYY-MM-DD'}, status=400)
 
             if not re.match('^\d{3}-\d{3,4}-\d{4}$', mobile_number): 
