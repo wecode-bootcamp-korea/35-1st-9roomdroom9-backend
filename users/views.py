@@ -7,7 +7,6 @@ from django.http  import JsonResponse
 from django.views import View
 from django.conf  import settings
 
-
 from .models import User
 
 class SignUpView(View):
