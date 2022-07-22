@@ -4,21 +4,23 @@ from django.views import View
 from .models import Product, Category
 
 class ProductListView(View):
-    def get(self, request, category_id=None):
-        result = []
+    def get(self, request, category_id=1000):
+        if not Category.objects.filter(id=category_id).exists(): 
+            return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
 
+        category = Category.objects.get(id=category_id)
         products = Product.objects.all()
 
-        if category_id:
-            if not Category.objects.filter(id=category_id).exists():
-                return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
+        if category_id != 1000:
             products = Product.objects.filter(category_id=category_id)
 
-        result.append({'total': products.count()})
+        category_data = {
+            'id'            : category.id,
+            'description'   : category.description,
+            'total_products': products.count()
+            }
 
-        for product in products:
-            images = product.productimage_set.all()
-            product_information = {
+        products_data = [{
                 'id'      : product.id,
                 'name'    : product.name,
                 'price'   : product.price,
@@ -27,8 +29,9 @@ class ProductListView(View):
                 'images'  : [{
                     'id' : image.id,
                     'url': image.url
-                    } for image in images]
-            }
-            result.append(product_information)
+                    } for image in product.productimage_set.all()]
+            } for product in products]
 
-        return JsonResponse({'result': result}, status=200)
+        return JsonResponse({
+            'products_data' : products_data,
+            'category_data' : category_data}, status=200)
