@@ -7,7 +7,7 @@ class User(TimeStampModel):
     email         = models.CharField(max_length=200, unique=True)
     password      = models.CharField(max_length=200)
     mobile_number = models.CharField(max_length=50)
-    birthday      = models.DateField(max_length=50, null=True)
+    birthday      = models.DateField(null=True)
 
     class Meta:
         db_table = 'users'

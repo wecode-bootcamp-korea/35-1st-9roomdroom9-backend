@@ -3,7 +3,6 @@ import json, bcrypt
 from django.http  import JsonResponse
 from django.views import View
 
-
 from .models import User
 from core.utils import checkRegex
 
