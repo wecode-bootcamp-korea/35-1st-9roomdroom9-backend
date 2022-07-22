@@ -1,35 +1,29 @@
 from django.http  import JsonResponse
 from django.views import View
 
-from .models import Product, Category
+from products.models import Product
 
-class MainView(View):
-    def get(self, request, cat_id=None):
-        result = []
-
-        # 전체리스트
-        if cat_id == None:
-            products = Product.objects.all()
-
-        #카테고리별
-        else:   
-            products = Product.objects.filter(category_id=cat_id)
-
-            if not Category.objects.filter(id=cat_id).exists():
-                return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
-
-        result.append({'total': products.count()})
-
-        for product in products:
-            images = product.productimage_set.all()
-            product_information = {
+class MainPageView(View):
+    def get(self, request):
+        def get_list(products):
+            product_list =  [{
                 'id'      : product.id,
                 'name'    : product.name,
                 'price'   : product.price,
                 'is_green': product.is_green,
                 'is_best' : product.is_best,
-                'img_urls': [image.url for image in images]
-            }
-            result.append(product_information)
+                'images'  : [{
+                    'id' : image.id,
+                    'url': image.url
+                    } for image in product.productimage_set.all()]
+            } for product in products]
+            return product_list
 
-        return JsonResponse({'result': result}, status=200)
+        new_products   = Product.objects.all().order_by('-created_at')[:8]
+        best_products  = Product.objects.filter(is_best = True).order_by('-created_at')[:8] 
+        green_products = Product.objects.filter(is_green = True).order_by('-created_at')[:8]
+
+        return JsonResponse({
+            'new_products'  : get_list(new_products),
+            'best_products' : get_list(best_products),
+            'green_products': get_list(green_products)}, status=200)
