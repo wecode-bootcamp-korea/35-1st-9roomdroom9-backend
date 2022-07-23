@@ -55,9 +55,12 @@ class ProductDetailView(View):
                     'url': image.url
                     } for image in images],
                 'options' : [{
-                    'product_option_id': [p_o.id for p_o in product.productoption_set.all()],
-                    'option_id'  : option.id,
-                    'name': option.name
+                    'option_id'                 : option.id,
+                    'name'                      : option.name,
+                    'product_option_information': [{
+                        'product_option_id'   : p_o.id,
+                        'product_option_stock': p_o.stock
+                        } for p_o in product.productoption_set.all()],
                     } for option in options]
             }
             return JsonResponse({'result': result}, status=200)
