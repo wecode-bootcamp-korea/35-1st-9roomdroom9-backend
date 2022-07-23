@@ -41,8 +41,10 @@ class ProductListView(View):
             return JsonResponse({
                 'products_data' : products_data,
                 'category_data' : category_data}, status=200)
+
         except Category.DoesNotExist:
             return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
+
         except KeyError as e:
             return JsonResponse({'message':f'KEY_ERROR {e}'}, status=400)
 
@@ -70,5 +72,6 @@ class ProductDetailView(View):
                     } for option in options]
             }
             return JsonResponse({'result': result}, status=200)
+            
         except Product.DoesNotExist:
             return JsonResponse({'message': 'PRODUCT_DOES_NOT_EXIST'}, status=400)
