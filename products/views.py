@@ -6,9 +6,6 @@ from .models import Product, Category
 class ProductListView(View):
     def get(self, request, category_id=1000):
         try:
-            if not Category.objects.filter(id=category_id).exists(): 
-                return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
-
             category = Category.objects.get(id=category_id)
             products = Product.objects.all()
 
@@ -18,8 +15,8 @@ class ProductListView(View):
             sort_by = {
                 None        : 'id',
                 'NEW'       : '-created_at',
-                'HIGH_PRICE': 'price',
-                'LOW_PRICE' : '-price'
+                'HIGH_PRICE': '-price',
+                'LOW_PRICE' : 'price'
             }
             products = products.order_by(sort_by[request.GET.get('sorting', None)])
 
@@ -44,6 +41,8 @@ class ProductListView(View):
             return JsonResponse({
                 'products_data' : products_data,
                 'category_data' : category_data}, status=200)
+        except Category.DoesNotExist:
+            return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
         except KeyError as e:
             return JsonResponse({'message':f'KEY_ERROR {e}'}, status=400)
 
