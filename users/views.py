@@ -1,23 +1,23 @@
 import json, jwt
 
-from django.http  import JsonResponse
-from django.views import View
-from django.conf  import settings
+from django.http            import JsonResponse
+from django.views           import View
+from django.conf            import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import User
+from .models    import User
 from core.utils import *
 
 
 class SignUpView(View):
     def post(self, request):
         try:
-            data           = json.loads(request.body)
-            name           = data['name']
-            email          = data['email']
-            password       = data['password']
-            mobile_number  = data['mobile_number']
-            birthday       = data.get('birthday')
+            data          = json.loads(request.body)
+            name          = data['name']
+            email         = data['email']
+            password      = data['password']
+            mobile_number = data['mobile_number']
+            birthday      = data.get('birthday')
 
             vaildNameRegex(name)
             validEmailRegex(email)
@@ -53,16 +53,14 @@ class SignUpView(View):
 class LoginView(View):
     def post(self, request):
         try:
-            data             = json.loads(request.body)
-            email            = data['email']
-            password         = data['password']
-            user             = User.objects.get(email=email)
+            data     = json.loads(request.body)
+            email    = data['email']
+            password = data['password']
+            user     = User.objects.get(email=email)
 
             checkPassword(password, user.password)
 
-            token = jwt.encode({'id': user.id}, settings.SECRET_KEY, settings.ALGORITHM)
-
-            return JsonResponse({'message': 'SUCCESS', 'access_token': token})
+            return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)})
 
         except KeyError as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
