@@ -55,7 +55,8 @@ class ProductDetailView(View):
                     'url': image.url
                     } for image in images],
                 'options' : [{
-                    'id'  : option.id,
+                    'product_option_id': [p_o.id for p_o in product.productoption_set.all()],
+                    'option_id'  : option.id,
                     'name': option.name
                     } for option in options]
             }
