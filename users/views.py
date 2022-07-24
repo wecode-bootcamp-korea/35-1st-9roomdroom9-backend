@@ -1,10 +1,11 @@
-import json, bcrypt
+import json
 
 from django.http  import JsonResponse
 from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import User
-from core import utils
+from core.utils import *
 
 class SignUpView(View):
     def post(self, request):
@@ -16,29 +17,30 @@ class SignUpView(View):
             mobile_number  = data['mobile_number']
             birthday       = data.get('birthday')
 
-            utils.vaildNameRegex(name)
-            utils.validEmailRegex(email)
-            utils.validPasswordRegex(password)
-            utils.validMobileRegex(mobile_number)
-            utils.checkEmailExist(email)
-            utils.checkMobileExist(mobile_number)
+            vaildNameRegex(name)
+            validEmailRegex(email)
+            validPasswordRegex(password)
+            validMobileRegex(mobile_number)
+            checkEmailExist(email)
+            checkMobileExist(mobile_number)
 
             if birthday: 
-                utils.validBirthdayRegex(birthday)
-
-            hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+                validBirthdayRegex(birthday)
 
             User.objects.create(
                 name          = name,
                 email         = email,
-                password      = hashed_password,
+                password      = hash(password),
                 mobile_number = mobile_number,
                 birthday      = birthday
             )
             return JsonResponse({'message': 'SUCCESS'}, status=201)
 
-        except KeyError:
-            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+        except KeyError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
 
-        except ValueError as e :
-            return JsonResponse({"message": f'{e}'}, status=400)
+        except ValueError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
+        
+        except ObjectDoesNotExist as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)

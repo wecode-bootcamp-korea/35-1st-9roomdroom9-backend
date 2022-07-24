@@ -1,4 +1,6 @@
-import re
+import re, bcrypt
+
+from django.core.exceptions import ObjectDoesNotExist
 
 from users.models import User
 
@@ -25,12 +27,15 @@ def validBirthdayRegex(value):
 def validMobileRegex(value):
     REGEX_MOBILE   = '^\d{3}-\d{3,4}-\d{4}$'
     if not re.match(REGEX_MOBILE, value):
-        raise ValueError("INVALID_MOBILE_NUMBER")
-
+        raise ObjectDoesNotExist("EXIST_EMAIL")
 def checkEmailExist(value):
     if User.objects.filter(email = value).exists():
         raise ValueError("EXIST_EMAIL")
 
 def checkMobileExist(value):
     if User.objects.filter(mobile_number = value).exists():
-        raise ValueError("EXIST_MOBILE_NUMBER")
+         raise ObjectDoesNotExist("EXIST_MOBILE_NUMBER")
+
+def hash(value):
+    hashed = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    return hashed
