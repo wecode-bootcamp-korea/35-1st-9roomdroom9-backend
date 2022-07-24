@@ -35,27 +35,64 @@ class CartView(View):
         except KeyError as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
 
-
     @login_required
     def get(self, request):
         try:
             user_id = request.user.id
             carts = Cart.objects.filter(user_id=user_id)
-            
-            result = [cart for cart in carts:
-                a = cart.product_option.product.productimage_set.all()
-                b = [image.url for image in a]
-
-                result.append({
-                    "cart_id" : cart.id,
-                    "quantity" : cart.quantity,
-                    "product_name"  : cart.product_option.product.name,
-                    "product_image" : b,
-                    "product_price" : cart.product_option.product.price,
-                    })]
-
-            return JsonResponse({'result': result }, status=200)
+            # result = []
+            # for cart in carts:
+            #     image_urls=[image.url for image in cart.product_option.product.productimage_set.all()]
+            #     images_url = cart.product_option.product.productimage_set.all()
+            #     image_urls=[image.url for image in images_url]
+            #     print(image_urls)
+            #     result.append({
+            #         "cart_id" : cart.id,
+            #         "quantity" : cart.quantity,
+            #         "product_name"  : cart.product_option.product.name,
+            #         "product_images" : {'image' : image_url for image_url in image_urls},
+            #         "product_price" : cart.product_option.product.price,
+            #         })
+            result = [{
+                "cart_id" : cart.id,
+                "quantity" : cart.quantity,
+                "product_name"  : cart.product_option.product.name,
+                "product_image" : {image.id: image.url for image in cart.product_option.product.productimage_set.all()},
+                "product_price" : cart.product_option.product.price,
+                } for cart in carts]
+            return JsonResponse({'result': result}, status=200)
+    
+        # 현재 출력 순서?
 
         except KeyError as error:
-            return JsonResponse({'message': f'{error}'}, status=400)
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
+        
+    @login_required
+    def delete(self, request):
+        try:
+            user_id = request.user.id
+            carts_id = request.GET.getlist('cart_id', None)
+            for cart_id in carts_id:
+                carts = Cart.objects.filter(id=cart_id, user_id=user_id)
+                carts.delete()
 
+            return JsonResponse({'result': 'SUCCESS'}, status=200)
+        
+        except KeyError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
+
+    @login_required
+    def patch(self, request):
+        try:
+            data = json.loads(request.body)
+            user_id = request.user.id
+            carts_id = request.GET.getlist('cart_id', None)
+            print(carts_id)
+            quantity = data['quantity']
+            for cart_id in carts_id:
+                carts = Cart.objects.filter(id=cart_id, user_id=user_id)
+                carts.update(quantity = quantity)
+            return JsonResponse({'result': 'SUCCESS'}, status=200)
+
+        except KeyError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
