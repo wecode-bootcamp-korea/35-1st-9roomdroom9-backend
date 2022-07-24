@@ -2,7 +2,6 @@ import json
 
 from django.http  import JsonResponse
 from django.views import View
-from django.core.exceptions import ObjectDoesNotExist
 
 from .models import User
 from core.utils import *
@@ -10,12 +9,12 @@ from core.utils import *
 class SignUpView(View):
     def post(self, request):
         try:
-            data           = json.loads(request.body)
-            name           = data['name']
-            email          = data['email']
-            password       = data['password']
-            mobile_number  = data['mobile_number']
-            birthday       = data.get('birthday')
+            data          = json.loads(request.body)
+            name          = data['name']
+            email         = data['email']
+            password      = data['password']
+            mobile_number = data['mobile_number']
+            birthday      = data.get('birthday')
 
             vaildNameRegex(name)
             validEmailRegex(email)
@@ -40,7 +39,4 @@ class SignUpView(View):
             return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
 
         except ValueError as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
-        
-        except ObjectDoesNotExist as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
