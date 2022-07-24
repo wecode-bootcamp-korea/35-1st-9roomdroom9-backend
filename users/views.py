@@ -1,12 +1,10 @@
 import json
 
-from django.http            import JsonResponse
-from django.views           import View
-from django.core.exceptions import ObjectDoesNotExist
+from django.http  import JsonResponse
+from django.views import View
 
-from .models    import User
+from .models import User
 from core.utils import *
-
 
 class SignUpView(View):
     def post(self, request):
@@ -42,9 +40,6 @@ class SignUpView(View):
 
         except ValueError as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=401)
-        
-        except ObjectDoesNotExist as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=404)
 
 
 class LoginView(View):
@@ -54,7 +49,7 @@ class LoginView(View):
             email    = data['email']
             password = data['password']
             user     = User.objects.get(email=email)
-
+            
             checkPassword(password, user.password)
 
             return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)}, status=201)
@@ -65,5 +60,7 @@ class LoginView(View):
         except ValueError:
             return JsonResponse({'message': 'INVALID_USER'}, status=401)
 
-        except ObjectDoesNotExist as error:
+        except User.DoesNotExist as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=404)
+
+

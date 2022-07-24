@@ -3,7 +3,6 @@ import re , jwt , bcrypt
 from functools              import wraps
 from django.conf            import settings
 from django.http            import JsonResponse
-from django.core.exceptions import ObjectDoesNotExist
 
 from users.models import User
 
@@ -34,11 +33,11 @@ def validMobileRegex(value):
 
 def checkEmailExist(value):
     if User.objects.filter(email = value).exists():
-        raise ObjectDoesNotExist("EXIST_EMAIL")
+        raise ValueError("EXIST_EMAIL")
 
 def checkMobileExist(value):
     if User.objects.filter(mobile_number = value).exists():
-        raise ObjectDoesNotExist("EXIST_MOBILE_NUMBER")
+        raise ValueError("EXIST_MOBILE_NUMBER")
 
 def checkPassword(incomePw, recordedPw):
     encoded_password = incomePw.encode('utf-8')
@@ -49,12 +48,6 @@ def checkPassword(incomePw, recordedPw):
 def hash(value):
     hashed = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     return hashed
-
-def checkPassword(incomePw, recordedPw):
-    encoded_password = incomePw.encode('utf-8')
-    user_password    = recordedPw.encode('utf-8')
-    if not bcrypt.checkpw(encoded_password, user_password):
-        raise ValueError("INVALID_USER")
 
 def createToken(value):
     token = jwt.encode({'id': value}, settings.SECRET_KEY, settings.ALGORITHM)
