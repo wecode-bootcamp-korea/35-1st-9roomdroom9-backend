@@ -1,4 +1,3 @@
-from itertools import product
 import json
 
 from django.views import View
@@ -19,12 +18,11 @@ class CartView(View):
             quantity = data['quantity']
             product_option = data['product_option']
 
-            if Cart.objects.filter(user_id = user_id).exists():
+            if Cart.objects.filter(user_id = user_id, product_option= product_option).exists():
                 cart = Cart.objects.filter(user_id=user_id)
                 quantity += cart[0].quantity
                 cart.update(quantity=quantity)
-                
-                return JsonResponse({'message' : 'CREATE_CART'}, status=201)
+                return JsonResponse({'message' : 'CHANGE_CART'}, status=201)
 
             Cart.objects.create(
                 quantity = quantity,
@@ -32,27 +30,29 @@ class CartView(View):
                 product_option_id = product_option,
             )
 
-            return JsonResponse({'message': 'sucess'}, status=200)
+            return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError as error:
-            return JsonResponse({'message': f'{error}'}, status=400)
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
 
 
     @login_required
     def get(self, request):
         try:
-            user = request.user
-            carts = cart.objects.filter(user=user)
-            result = []
-            for cart in carts:
+            user_id = request.user.id
+            carts = Cart.objects.filter(user_id=user_id)
+            
+            result = [cart for cart in carts:
+                a = cart.product_option.product.productimage_set.all()
+                b = [image.url for image in a]
+
                 result.append({
                     "cart_id" : cart.id,
-                    "product"  : cart.product.name,
-                    "product_image_1" : cart.product.name,
-                    "price" : cart.product.price,
                     "quantity" : cart.quantity,
-                    "product_id" : cart.product.id
-                    })
+                    "product_name"  : cart.product_option.product.name,
+                    "product_image" : b,
+                    "product_price" : cart.product_option.product.price,
+                    })]
 
             return JsonResponse({'result': result }, status=200)
 
