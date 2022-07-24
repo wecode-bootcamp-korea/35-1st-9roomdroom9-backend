@@ -1,4 +1,4 @@
-import json, jwt
+import json
 
 from django.http  import JsonResponse
 from django.views import View
@@ -11,12 +11,12 @@ from core.utils import *
 class SignUpView(View):
     def post(self, request):
         try:
-            data           = json.loads(request.body)
-            name           = data['name']
-            email          = data['email']
-            password       = data['password']
-            mobile_number  = data['mobile_number']
-            birthday       = data.get('birthday')
+            data          = json.loads(request.body)
+            name          = data['name']
+            email         = data['email']
+            password      = data['password']
+            mobile_number = data['mobile_number']
+            birthday      = data.get('birthday')
 
             vaildNameRegex(name)
             validEmailRegex(email)
@@ -28,43 +28,41 @@ class SignUpView(View):
             if birthday: 
                 validBirthdayRegex(birthday)
 
-            hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
             User.objects.create(
                 name          = name,
                 email         = email,
-                password      = hashed_password,
+                password      = hash(password),
                 mobile_number = mobile_number,
                 birthday      = birthday
             )
             return JsonResponse({'message': 'SUCCESS'}, status=201)
 
-        except KeyError as e:
-            return JsonResponse({'message': f'{e}'}, status=400)
+        except KeyError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
 
-        except ValueError as e :
-            return JsonResponse({"message": f'{e}'}, status=400)
+        except ValueError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=401)
 
 
 class LoginView(View):
     def post(self, request):
         try:
-            data             = json.loads(request.body)
-            email            = data['email']
-            password         = data['password']
-            user             = User.objects.get(email=email)
-
+            data     = json.loads(request.body)
+            email    = data['email']
+            password = data['password']
+            user     = User.objects.get(email=email)
+            
             checkPassword(password, user.password)
 
-            token = jwt.encode({'id': user.id}, settings.SECRET_KEY, settings.ALGORITHM)
+            return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)}, status=201)
 
-            return JsonResponse({'message': 'SUCCESS', 'access_token': token.decode('utf-8')})
-
-        except KeyError:
-            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+        except KeyError as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
         
         except ValueError:
             return JsonResponse({'message': 'INVALID_USER'}, status=401)
 
-        except User.DoesNotExist:
-            return JsonResponse({'message': 'INVALID_USER'}, status=401)
+        except User.DoesNotExist as error:
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=404)
+
+
