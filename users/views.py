@@ -1,8 +1,7 @@
-import json, jwt
+import json
 
 from django.http            import JsonResponse
 from django.views           import View
-from django.conf            import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models    import User
@@ -29,12 +28,10 @@ class SignUpView(View):
             if birthday: 
                 validBirthdayRegex(birthday)
 
-            hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-
             User.objects.create(
                 name          = name,
                 email         = email,
-                password      = hashed_password,
+                password      = hash(password),
                 mobile_number = mobile_number,
                 birthday      = birthday
             )
@@ -44,10 +41,10 @@ class SignUpView(View):
             return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
 
         except ValueError as error:
-            return JsonResponse({"message": f'{error}'.strip("'")}, status=400)
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=401)
         
         except ObjectDoesNotExist as error:
-            return JsonResponse({"message": f'{error}'.strip("'")}, status=400)
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=404)
 
 
 class LoginView(View):
@@ -60,7 +57,7 @@ class LoginView(View):
 
             checkPassword(password, user.password)
 
-            return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)})
+            return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)}, status=201)
 
         except KeyError as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
@@ -69,4 +66,4 @@ class LoginView(View):
             return JsonResponse({'message': 'INVALID_USER'}, status=401)
 
         except ObjectDoesNotExist as error:
-            return JsonResponse({"message": f'{error}'.strip("'")}, status=400)
+            return JsonResponse({'message': f'{error}'.strip("'")}, status=404)
