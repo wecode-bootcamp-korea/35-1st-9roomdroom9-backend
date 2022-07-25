@@ -33,10 +33,16 @@ class ProductListView(View):
     def get(self, request, category_id=1000):
         try:
             category = Category.objects.get(id=category_id)
-            products = Product.objects.all()
+
+            offset = int(request.GET.get('offset', None))
+            limit  = int(request.GET.get('limit', None))
+
+            products = Product.objects.all()[ offset : offset + limit ]
 
             if category_id != 1000:
-                products = Product.objects.filter(category_id=category_id)
+                products = Product.objects.filter(category_id=category_id)[ offset : offset + limit ]
+
+            products.update(read=True)
             
             sort_by = {
                 None        : 'id',
