@@ -45,8 +45,8 @@ class ProductListView(View):
         except Category.DoesNotExist:
             return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
 
-        except KeyError as e:
-            return JsonResponse({'message':f'KEY_ERROR {e}'}, status=400)
+        except KeyError:
+            return JsonResponse({'message':'KEY_ERROR'}, status=400)
 
 class ProductDetailView(View):
     def get(self, request, product_id):
