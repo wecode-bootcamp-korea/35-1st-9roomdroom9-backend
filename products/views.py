@@ -96,11 +96,11 @@ class ProductDetailView(View):
                 'options' : [{
                     'option_id'           : option.id,
                     'name'                : option.name,
-                    'product_option_id'   : product.productoption_set.get(product_id=product.id, option_id=option.id).id,
-                    'product_option_stock': product.productoption_set.get(product_id=product.id, option_id=option.id).stock
+                    'product_option_id'   : product.productoption_set.get(option_id=option.id).id,
+                    'product_option_stock': product.productoption_set.get(option_id=option.id).stock
                     } for option in options]
             }
-            
+
             return JsonResponse({'result': result}, status=200)
             
         except Product.DoesNotExist:
