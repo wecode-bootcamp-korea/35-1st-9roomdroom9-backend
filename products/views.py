@@ -1,3 +1,5 @@
+import math
+
 from django.http  import JsonResponse
 from django.views import View
 
@@ -38,11 +40,13 @@ class ProductListView(View):
             if category_id != 1000:
                 products = Product.objects.filter(category_id=category_id)
 
+            total_products = products.count()
+
             category_data = {
                 'id'            : category.id,
                 'name'          : category.name,
                 'description'   : category.description,
-                'total_products': products.count()
+                'total_products': total_products
                 }
             
             sort_by = {
@@ -63,13 +67,14 @@ class ProductListView(View):
             if limit: 
                 limit = int(limit)
             else: 
-                limit = products.count()
+                limit = products.count() - offset
             
             products = products[ offset : offset + limit ]
 
             page_data = {
-                'next'    : f'/products/{category.id}?limit={limit}&offset={offset+limit}',
-                'previous': f'/products/{category.id}?limit={limit}&offset={offset-limit}'
+                'current_page' : math.floor( (offset + limit) / limit ),
+                'next'    : None if offset + limit > total_products else f'/products/{category.id}?limit={limit}&offset={offset+limit}',
+                'previous': None if offset - limit < 0 else f'/products/{category.id}?limit={limit}&offset={offset-limit}'
             }
 
             products_data = [{
