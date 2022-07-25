@@ -68,5 +68,4 @@ def accessCkeck(func):
         except User.DoesNotExist:
             return JsonResponse({'message' : 'INVALID USER'}, status = 400)
         return func(self, request, *args, **kwargs)
-    
     return wrapper

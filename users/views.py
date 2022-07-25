@@ -35,8 +35,8 @@ class SignUpView(View):
             )
             return JsonResponse({'message': 'SUCCESS'}, status=201)
 
-        except KeyError as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
 
         except ValueError as error:
             return JsonResponse({'message': f'{error}'.strip("'")}, status=401)
@@ -54,13 +54,11 @@ class LoginView(View):
 
             return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)}, status=201)
 
-        except KeyError as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
-        
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
         except ValueError:
             return JsonResponse({'message': 'INVALID_USER'}, status=401)
 
-        except User.DoesNotExist as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=404)
-
-
+        except User.DoesNotExist:
+            return JsonResponse({'message': 'User_DoseNotExist'}, status=404)
