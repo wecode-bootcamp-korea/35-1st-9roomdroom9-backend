@@ -17,6 +17,7 @@ class MainPageView(View):
                     'url': image.url
                     } for image in product.productimage_set.all()]
             } for product in products]
+            
             return product_list
 
         new_products   = Product.objects.all().order_by('-created_at')[:8]
@@ -47,6 +48,7 @@ class ProductListView(View):
 
             category_data = {
                 'id'            : category.id,
+                'name'          : category.name,
                 'description'   : category.description,
                 'total_products': products.count()
                 }
