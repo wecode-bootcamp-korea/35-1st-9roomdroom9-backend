@@ -16,6 +16,7 @@ class ProductListView(View):
 
         category_data = {
             'id'            : category.id,
+            'name'          : category.name,
             'description'   : category.description,
             'total_products': products.count()
             }
