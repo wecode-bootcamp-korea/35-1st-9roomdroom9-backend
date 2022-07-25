@@ -30,19 +30,20 @@ class MainPageView(View):
             'green_products': get_list(green_products)}, status=200)
 
 class ProductListView(View):
-    def get(self, request, category_id=1000):
+    def get(self, request, category_id):
         try:
             category = Category.objects.get(id=category_id)
-
-            offset = int(request.GET.get('offset', None))
-            limit  = int(request.GET.get('limit', None))
-
-            products = Product.objects.all()[ offset : offset + limit ]
+            products = Product.objects.all()
 
             if category_id != 1000:
-                products = Product.objects.filter(category_id=category_id)[ offset : offset + limit ]
+                products = Product.objects.filter(category_id=category_id)
 
-            products.update(read=True)
+            category_data = {
+                'id'            : category.id,
+                'name'          : category.name,
+                'description'   : category.description,
+                'total_products': products.count()
+                }
             
             sort_by = {
                 None        : 'id',
@@ -52,12 +53,24 @@ class ProductListView(View):
             }
             products = products.order_by(sort_by[request.GET.get('sorting', None)])
 
-            category_data = {
-                'id'            : category.id,
-                'name'          : category.name,
-                'description'   : category.description,
-                'total_products': products.count()
-                }
+            offset = request.GET.get('offset', None)
+            limit  = request.GET.get('limit', None)
+
+            if offset: 
+                offset = int(offset)
+            else: 
+                offset = 0
+            if limit: 
+                limit = int(limit)
+            else: 
+                limit = products.count()
+            
+            products = products[ offset : offset + limit ]
+
+            page_data = {
+                'next'    : f'/products/{category.id}?limit={limit}&offset={offset+limit}',
+                'previous': f'/products/{category.id}?limit={limit}&offset={offset-limit}'
+            }
 
             products_data = [{
                     'id'      : product.id,
@@ -72,8 +85,9 @@ class ProductListView(View):
                 } for product in products]
 
             return JsonResponse({
-                'products_data' : products_data,
-                'category_data' : category_data}, status=200)
+                'page_data'    : page_data,
+                'products_data': products_data,
+                'category_data': category_data}, status=200)
 
         except Category.DoesNotExist:
             return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
@@ -100,14 +114,13 @@ class ProductDetailView(View):
                     'url': image.url
                     } for image in images],
                 'options' : [{
-                    'option_id'                 : option.id,
-                    'name'                      : option.name,
-                    'product_option_information': [{
-                        'product_option_id'   : product_option.id,
-                        'product_option_stock': product_option.stock
-                        } for product_option in product.productoption_set.all()],
+                    'option_id'           : option.id,
+                    'name'                : option.name,
+                    'product_option_id'   : product.productoption_set.get(option_id=option.id).id,
+                    'product_option_stock': product.productoption_set.get(option_id=option.id).stock
                     } for option in options]
             }
+
             return JsonResponse({'result': result}, status=200)
             
         except Product.DoesNotExist:
