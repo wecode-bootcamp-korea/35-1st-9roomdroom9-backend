@@ -55,6 +55,7 @@ class ProductListView(View):
                 'HIGH_PRICE': '-price',
                 'LOW_PRICE' : 'price'
             }
+
             products = products.order_by(sort_by[request.GET.get('sorting', None)])
 
             offset = request.GET.get('offset', None)
@@ -90,9 +91,9 @@ class ProductListView(View):
                 } for product in products]
 
             return JsonResponse({
+                'category_data': category_data,
                 'page_data'    : page_data,
-                'products_data': products_data,
-                'category_data': category_data}, status=200)
+                'products_data': products_data}, status=200)
 
         except Category.DoesNotExist:
             return JsonResponse({'message':'CATEGORY_DOES_NOT_EXIST'}, status=400)
