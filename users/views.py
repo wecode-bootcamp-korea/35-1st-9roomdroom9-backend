@@ -36,7 +36,7 @@ class SignUpView(View):
             return JsonResponse({'message': 'SUCCESS'}, status=201)
 
         except KeyError as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
+            return JsonResponse({'message': "KEY_ERROR"}, status=400)
 
         except ValueError as error:
-            return JsonResponse({'message': f'{error}'.strip("'")}, status=400)
+            return JsonResponse({'message': f'{error}'}, status=400)
