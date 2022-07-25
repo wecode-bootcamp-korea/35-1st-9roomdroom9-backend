@@ -94,14 +94,13 @@ class ProductDetailView(View):
                     'url': image.url
                     } for image in images],
                 'options' : [{
-                    'option_id'                 : option.id,
-                    'name'                      : option.name,
-                    'product_option_information': [{
-                        'product_option_id'   : product_option.id,
-                        'product_option_stock': product_option.stock
-                        } for product_option in product.productoption_set.all()],
+                    'option_id'           : option.id,
+                    'name'                : option.name,
+                    'product_option_id'   : product.productoption_set.get(product_id=product.id, option_id=option.id).id,
+                    'product_option_stock': product.productoption_set.get(product_id=product.id, option_id=option.id).stock
                     } for option in options]
             }
+            
             return JsonResponse({'result': result}, status=200)
             
         except Product.DoesNotExist:
