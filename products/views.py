@@ -73,7 +73,7 @@ class ProductListView(View):
             products = products[ offset : offset + limit ]
 
             page_data = {
-                'current_page' : math.ceil( (offset + limit) / limit ),
+                'current_page' : math.floor( (offset + limit) / limit ),
                 'next'    : None if offset + limit > total_products else f'/products/{category.id}?limit={limit}&offset={offset+limit}',
                 'previous': None if offset - limit < 0              else f'/products/{category.id}?limit={limit}&offset={offset-limit}'
             }
