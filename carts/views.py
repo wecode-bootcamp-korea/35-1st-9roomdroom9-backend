@@ -5,8 +5,6 @@ from django.http  import JsonResponse
 
 from core.utils      import login_required
 from orders.models   import Cart
-from products.models import ProductOption
-from products.models import *
 
 class CartView(View):
     @login_required
@@ -16,11 +14,16 @@ class CartView(View):
             user_id        = request.user.id
             quantity       = data['quantity']
             product_option = data['product_option']
+            
+            own_cart = Cart.objects.select_related('product_option').filter(user_id=user_id,product_option= product_option)
+            
+            print(list(range(10000)))
 
-            if Cart.objects.filter(user_id = user_id, product_option = product_option).exists():
-                cart      = Cart.objects.filter(user_id=user_id)
-                quantity += cart[0].quantity
-                cart.update(quantity=quantity)
+            if own_cart.exists():
+                if quantity not in list(range(1,10000)) or own_cart[0].product_option.stock - quantity < 0:
+                    raise ValueError
+                quantity += own_cart[0].quantity
+                own_cart.update(quantity=quantity)
                 return JsonResponse({'message' : 'CHANGE_CART'}, status=201)
 
             Cart.objects.create(
@@ -28,8 +31,13 @@ class CartView(View):
                 user_id           = user_id,
                 product_option_id = product_option,
             )
-
             return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+        
+        except Cart.DoesNotExist:
+            return JsonResponse({'message': 'Cart.DoesNotExist'}, status=400)
+        
+        except ValueError:
+            return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
