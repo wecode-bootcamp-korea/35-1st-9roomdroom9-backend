@@ -3,7 +3,7 @@ import json
 from django.views import View
 from django.http  import JsonResponse
 
-from core.utils      import accessCkeck
+from core.utils      import accessCkeck, checkQuantity
 from orders.models   import Cart
 
 class CartView(View):
@@ -14,21 +14,22 @@ class CartView(View):
             user_id        = request.user.id
             quantity       = data['quantity']
             product_option = data['product_option']
-            
-            own_cart = Cart.objects.select_related('product_option').filter(user_id=user_id,product_option= product_option)
 
-            if own_cart.exists():
-                if quantity not in list(range(1,10000)) or own_cart[0].product_option.stock - quantity < 0:
-                    raise ValueError
-                quantity += own_cart[0].quantity
-                own_cart.update(quantity=quantity)
-                return JsonResponse({'message' : 'CHANGE_CART'}, status=201)
-
-            Cart.objects.create(
-                quantity          = quantity,
+            checkQuantity(quantity,product_option)
+                
+            cart, is_created = Cart.objects.get_or_create(
                 user_id           = user_id,
                 product_option_id = product_option,
+                defaults          = {
+                    'quantity' : quantity,
+                }
             )
+
+            if not is_created:
+                cart.quantity += quantity
+            
+            cart.save()
+
             return JsonResponse({'message': 'SUCCESS'}, status=200)
 
         except KeyError:

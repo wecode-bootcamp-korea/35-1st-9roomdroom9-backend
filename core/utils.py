@@ -1,10 +1,12 @@
 import re, jwt, bcrypt
 
-from functools import wraps
+from functools   import wraps
 from django.conf import settings
 from django.http import JsonResponse
 
-from users.models import User
+from users.models    import User
+from products.models import ProductOption
+
 
 def vaildNameRegex(value):
     REGEX_NAME     = '^[가-힣]{2,5}$'
@@ -70,3 +72,7 @@ def accessCkeck(func):
         return func(self, request, *args, **kwargs)
 
     return wrapper
+
+def checkQuantity(quantity,value):
+    if quantity > ProductOption.objects.get(id=value).stock:
+        raise ValueError
