@@ -26,6 +26,3 @@ class CartView(View):
         
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
-        
-        except Cart.DoesNotExist:
-            return JsonResponse({'message': 'Cart.DoesNotExist'}, status=400)
