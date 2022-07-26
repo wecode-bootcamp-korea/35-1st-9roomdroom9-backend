@@ -1,13 +1,14 @@
 import json
+from os import access
 
 from django.views import View
 from django.http  import JsonResponse
 
-from core.utils      import login_required
+from core.utils      import accessCkeck
 from orders.models   import Cart
 
 class CartView(View):
-    @login_required
+    @accessCkeck
     def post(self, request):
         try:
             data           = json.loads(request.body)
@@ -16,8 +17,6 @@ class CartView(View):
             product_option = data['product_option']
             
             own_cart = Cart.objects.select_related('product_option').filter(user_id=user_id,product_option= product_option)
-            
-            print(list(range(10000)))
 
             if own_cart.exists():
                 if quantity not in list(range(1,10000)) or own_cart[0].product_option.stock - quantity < 0:
