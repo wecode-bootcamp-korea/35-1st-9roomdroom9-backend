@@ -1,5 +1,3 @@
-import math
-
 from django.http  import JsonResponse
 from django.views import View
 
@@ -35,7 +33,7 @@ class ProductListView(View):
     def get(self, request, category_id):
         try:
             offset = int(request.GET.get('offset', 0))
-            limit  = int(request.GET.get('limit', 10))
+            limit  = int(request.GET.get('limit', 12))
 
             category = Category.objects.get(id=category_id)
             products = Product.objects.all()
@@ -43,13 +41,11 @@ class ProductListView(View):
             if category_id != 1000:
                 products = Product.objects.filter(category_id=category_id)
 
-            total_products = products.count()
-
             category_data = {
                 'id'            : category.id,
                 'name'          : category.name,
                 'description'   : category.description,
-                'total_products': total_products
+                'total_products': products.count()
                 }
             
             sort_by = {
@@ -59,7 +55,7 @@ class ProductListView(View):
                 'LOW_PRICE' : 'price'
             }
 
-            products = products.order_by(sort_by[request.GET.get('sorting', None)])[ offset : offset + limit ]
+            products = products.prefetch_related('productimage_set').order_by(sort_by[request.GET.get('sorting', None)])[ offset : offset + limit ]
 
             products_data = [{
                     'id'      : product.id,
