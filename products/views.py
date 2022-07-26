@@ -3,7 +3,8 @@ import math
 from django.http  import JsonResponse
 from django.views import View
 
-from .models import Product, Category
+from .models    import Product, Category
+from decorators import query_debugger
 
 class MainPageView(View):
     def get(self, request):
@@ -32,8 +33,12 @@ class MainPageView(View):
             'green_products': get_list(green_products)}, status=200)
 
 class ProductListView(View):
+    @query_debugger
     def get(self, request, category_id):
         try:
+            offset = int(request.GET.get('offset', 0))
+            limit  = int(request.GET.get('limit', 6))
+
             category = Category.objects.get(id=category_id)
             products = Product.objects.all()
 
@@ -56,27 +61,24 @@ class ProductListView(View):
                 'LOW_PRICE' : 'price'
             }
 
-            products = products.order_by(sort_by[request.GET.get('sorting', None)])
+            products = products.prefetch_related('productimage_set').order_by(sort_by[request.GET.get('sorting', None)])[offset:offset+limit]
 
-            offset = request.GET.get('offset', None)
-            limit  = request.GET.get('limit', None)
-
-            if offset: 
-                offset = int(offset)
-            else: 
-                offset = 0
-            if limit: 
-                limit = int(limit)
-            else: 
-                limit = total_products - offset
+            # if offset: 
+            #     offset = int(offset)
+            # else: 
+            #     offset = 0
+            # if limit: 
+            #     limit = int(limit)
+            # else: 
+            #     limit = total_products - offset
             
-            products = products[ offset : offset + limit ]
+            # products = products[ offset : offset + limit ]
 
-            page_data = {
-                'current_page' : math.floor( (offset + limit) / limit ),
-                'next'    : None if offset + limit > total_products else f'/products/{category.id}?limit={limit}&offset={offset+limit}',
-                'previous': None if offset - limit < 0              else f'/products/{category.id}?limit={limit}&offset={offset-limit}'
-            }
+            # page_data = {
+            #     'current_page' : math.floor( (offset + limit) / limit ),
+            #     'next'    : None if offset + limit > total_products else f'/products/{category.id}?limit={limit}&offset={offset+limit}',
+            #     'previous': None if offset - limit < 0              else f'/products/{category.id}?limit={limit}&offset={offset-limit}'
+            # }
 
             products_data = [{
                     'id'      : product.id,
@@ -92,7 +94,7 @@ class ProductListView(View):
 
             return JsonResponse({
                 'category_data': category_data,
-                'page_data'    : page_data,
+                # 'page_data'    : page_data,
                 'products_data': products_data}, status=200)
 
         except Category.DoesNotExist:
@@ -108,6 +110,12 @@ class ProductDetailView(View):
 
             images  = product.productimage_set.all()
             options = product.options.all()
+
+            products = Product.objects.all()
+
+
+            for product in products:
+                print(product.id, product.name)
 
             result = {
                 'id'      : product.id,
