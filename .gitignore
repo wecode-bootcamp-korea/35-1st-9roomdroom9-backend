@@ -406,3 +406,5 @@ db_uploader.py
 csv
 
 decorators.py
+products.csv
+users.csv
