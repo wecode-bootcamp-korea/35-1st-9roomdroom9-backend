@@ -32,7 +32,7 @@ class MainPageView(View):
 class ProductListView(View):
     def get(self, request, category_id=1000):
         try:
-            keyword = request.GET.get('search', None)
+            keyword = request.GET.get('search', '')
 
             category = Category.objects.get(id=category_id)
             products = Product.objects.all()
