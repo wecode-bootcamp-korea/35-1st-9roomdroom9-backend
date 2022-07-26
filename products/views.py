@@ -32,12 +32,16 @@ class MainPageView(View):
 class ProductListView(View):
     def get(self, request, category_id=1000):
         try:
+            keyword = request.GET.get('search', None)
+
             category = Category.objects.get(id=category_id)
             products = Product.objects.all()
 
             if category_id != 1000:
                 products = Product.objects.filter(category_id=category_id)
             
+            products = products.filter(name__contains=keyword)
+
             sort_by = {
                 None        : 'id',
                 'NEW'       : '-created_at',
