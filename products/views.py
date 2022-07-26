@@ -34,6 +34,9 @@ class MainPageView(View):
 class ProductListView(View):
     def get(self, request, category_id):
         try:
+            offset = int(request.GET.get('offset', 0))
+            limit  = int(request.GET.get('limit', 10))
+
             category = Category.objects.get(id=category_id)
             products = Product.objects.all()
 
@@ -56,27 +59,7 @@ class ProductListView(View):
                 'LOW_PRICE' : 'price'
             }
 
-            products = products.order_by(sort_by[request.GET.get('sorting', None)])
-
-            offset = request.GET.get('offset', None)
-            limit  = request.GET.get('limit', None)
-
-            if offset: 
-                offset = int(offset)
-            else: 
-                offset = 0
-            if limit: 
-                limit = int(limit)
-            else: 
-                limit = total_products - offset
-            
-            products = products[ offset : offset + limit ]
-
-            page_data = {
-                'current_page' : math.floor( (offset + limit) / limit ),
-                'next'    : None if offset + limit >= total_products else f'/products/{category.id}?limit={limit}&offset={offset+limit}',
-                'previous': None if offset - limit < 0               else f'/products/{category.id}?limit={limit}&offset={offset-limit}'
-            }
+            products = products.order_by(sort_by[request.GET.get('sorting', None)])[ offset : offset + limit ]
 
             products_data = [{
                     'id'      : product.id,
@@ -92,7 +75,6 @@ class ProductListView(View):
 
             return JsonResponse({
                 'category_data': category_data,
-                'page_data'    : page_data,
                 'products_data': products_data}, status=200)
 
         except Category.DoesNotExist:
