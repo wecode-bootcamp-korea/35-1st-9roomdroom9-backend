@@ -403,5 +403,8 @@ zsdoc/data
 my_settings.py
 
 db_uploader.py
+csv
+
+decorators.py
 products.csv
 users.csv

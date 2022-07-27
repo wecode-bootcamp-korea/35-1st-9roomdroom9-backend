@@ -48,6 +48,15 @@ class ProductListView(View):
                 'description'   : category.description,
                 'total_products': products.count()
                 }
+            
+            sort_by = {
+                None        : 'id',
+                'NEW'       : '-created_at',
+                'HIGH_PRICE': '-price',
+                'LOW_PRICE' : 'price'
+            }
+
+            products = products.prefetch_related('productimage_set').order_by(sort_by[request.GET.get('sorting', None)])[ offset : offset + limit ]
 
             sort_by = {
                 None        : 'id',
