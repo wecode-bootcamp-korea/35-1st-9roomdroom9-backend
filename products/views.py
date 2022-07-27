@@ -20,9 +20,9 @@ class MainPageView(View):
             
             return product_list
 
-        new_products   = Product.objects.all().order_by('-created_at')[:8]
-        best_products  = Product.objects.filter(is_best = True).order_by('-created_at')[:8] 
-        green_products = Product.objects.filter(is_green = True).order_by('-created_at')[:8]
+        new_products   = Product.objects.all().prefetch_related('productimage_set').order_by('-created_at')[:8]
+        best_products  = Product.objects.filter(is_best = True).prefetch_related('productimage_set').order_by('-created_at')[:8] 
+        green_products = Product.objects.filter(is_green = True).prefetch_related('productimage_set').order_by('-created_at')[:8]
 
         return JsonResponse({
             'new_products'  : get_list(new_products),
