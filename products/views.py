@@ -34,10 +34,11 @@ class ProductListView(View):
         try:
             offset = int(request.GET.get('offset', 0))
             limit  = int(request.GET.get('limit', 12))
+            keyword = request.GET.get('search', '')
 
             category = Category.objects.get(id=category_id)
-            products = Product.objects.all()
-
+            products = Product.objects.filter(name__contains=keyword)
+            
             if category_id != 1000:
                 products = Product.objects.filter(category_id=category_id)
 
@@ -48,6 +49,15 @@ class ProductListView(View):
                 'total_products': products.count()
                 }
             
+            sort_by = {
+                None        : 'id',
+                'NEW'       : '-created_at',
+                'HIGH_PRICE': '-price',
+                'LOW_PRICE' : 'price'
+            }
+
+            products = products.prefetch_related('productimage_set').order_by(sort_by[request.GET.get('sorting', None)])[ offset : offset + limit ]
+
             sort_by = {
                 None        : 'id',
                 'NEW'       : '-created_at',
