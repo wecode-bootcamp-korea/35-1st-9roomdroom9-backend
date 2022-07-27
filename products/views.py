@@ -32,8 +32,8 @@ class MainPageView(View):
 class ProductListView(View):
     def get(self, request, category_id):
         try:
-            offset = int(request.GET.get('offset', 0))
-            limit  = int(request.GET.get('limit', 12))
+            offset  = int(request.GET.get('offset', 0))
+            limit   = int(request.GET.get('limit', 10))
             keyword = request.GET.get('search', '')
 
             category = Category.objects.get(id=category_id)
