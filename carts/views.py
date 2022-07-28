@@ -2,9 +2,11 @@ import json
 
 from django.views import View
 from django.http  import JsonResponse
+from django.db.models   import Prefetch
 
 from core.utils      import accessCkeck, checkQuantity
 from orders.models   import Cart
+from products.models import ProductImage
 
 class CartView(View):
     @accessCkeck
@@ -54,10 +56,10 @@ class CartView(View):
                     'product_option__option',
                     )
                 .prefetch_related(
-                    # Prefetch(
+                    Prefetch(
                         'product_option__product__productimage_set',
-                        # queryset=(ProductImage.objects.all())
-                    # )
+                        queryset=(ProductImage.objects.all())
+                    )
                 )
                 .filter(
                     user_id=user_id
@@ -70,6 +72,7 @@ class CartView(View):
             result  = [{
                 "cart_id"             : cart.id,
                 "quantity"            : cart.quantity,
+                "product_id"          : cart.product_option.product.id,
                 "product_name"        : cart.product_option.product.name,
                 "product_option_id"   : cart.product_option.id,
                 "product_option_name" : cart.product_option.option.name,
