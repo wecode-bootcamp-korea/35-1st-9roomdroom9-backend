@@ -62,3 +62,25 @@ class CartView(View):
         
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
+    @accessCkeck
+    def delete(self, request):
+        try:
+            user_id  = request.user.id
+            cart_ids = request.GET.getlist('cart_id', None)
+            
+            carts = Cart.objects.filter(user_id=user_id, id__in=cart_ids)          
+            carts.delete()
+
+            return JsonResponse({'message' : 'SUCCESS'}, status=200)
+
+        except KeyError:
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
+        except Cart.DoesNotExist:
+            return JsonResponse({'message': 'Cart.DoesNotExist'}, status=400)
+
+        except ValueError:
+            return JsonResponse({'message': 'VALUE_ERROR'}, status=400)
+
+        
