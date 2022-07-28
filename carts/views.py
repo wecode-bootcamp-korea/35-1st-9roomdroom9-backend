@@ -46,7 +46,26 @@ class CartView(View):
         try:
             user_id = request.user.id
             
-            carts = Cart.objects.select_related('product_option','product_option__product','product_option__option').prefetch_related('product_option__product__productimage_set').filter(user_id=user_id).order_by('-updated_at')
+            carts = (
+                Cart.objects
+                .select_related(
+                    'product_option',
+                    'product_option__product',
+                    'product_option__option',
+                    )
+                .prefetch_related(
+                    # Prefetch(
+                        'product_option__product__productimage_set',
+                        # queryset=(ProductImage.objects.all())
+                    # )
+                )
+                .filter(
+                    user_id=user_id
+                    )
+                .order_by(
+                    '-updated_at'
+                    )
+            )
             
             result  = [{
                 "cart_id"             : cart.id,

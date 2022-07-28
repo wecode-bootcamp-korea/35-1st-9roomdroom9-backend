@@ -50,7 +50,7 @@ class LoginView(View):
             user     = User.objects.get(email=email)
 
             checkPassword(password, user.password)
-            return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id)}, status=201)
+            return JsonResponse({'message': 'SUCCESS', 'access_token': createToken(user.id), 'name': user.name}, status=201)
             
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
