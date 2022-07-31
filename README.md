@@ -38,32 +38,6 @@
 <img src="https://img.shields.io/badge/python-3776AB?style=flat-square&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/django-092E20?style=flat-square&logo=django&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=Amazon%20AWS&logoColor=white"/>
 
 
-### 🐥 구현페이지
-
-#### 메인화면
-
-- 메인 슬라이드 이미지와 Nav,Footer로 디자인을 완성했습니다.
-
-`메인화면 gif올리기`
-
-- component를 사용하여 코드의 가독성과 재활용성을 높였다.
-- map함수로 메인페이지의 반복적이고 동일한 레이아웃을 데이터를 일일이 적지않도록 하였다.
-- useState로 상품 데이터를 props로 불러와 각각 다른 데이터를 가져올 수 있도록 작업하였다.
-- fetch를 사용하여 백엔드 서버에서 데이터를 받아와 Best,New, Green(친환경)상품이 나올 수 있도록 구현하였다.
-
-#### 상품 리스트 화면
-
-`상품 리스트 화면 gif올리기`
-
-#### 로그인 화면
-
-`로그인 화면 gif올리기`
-
-#### 회원가입 화면
-
-`회원가입 화면 gif올리기`
-
-
 
 ### 🐥 협업 툴
 
