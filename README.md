@@ -26,17 +26,24 @@
     - 페이지네이션
   - 상품상세
   - 상품검색
+  
+  
+### 🐥 적용 기술
+
+<img src="https://img.shields.io/badge/python-3776AB?style=flat-square&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/django-092E20?style=flat-square&logo=django&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=Amazon%20AWS&logoColor=white"/>
+
 
 ### 🐥 Database Modeling
 
 ![image](https://user-images.githubusercontent.com/97498663/182018590-ed9a4a30-9a79-475b-b85e-544d536922dd.png)
 
 
-  
-### 🐥 적용 기술
 
-<img src="https://img.shields.io/badge/python-3776AB?style=flat-square&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/django-092E20?style=flat-square&logo=django&logoColor=white"> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=MySQL&logoColor=white"> <img src="https://img.shields.io/badge/Amazon AWS-232F3E?style=flat-square&logo=Amazon%20AWS&logoColor=white"/>
+### 🐥 시연자료
 
+![장바구니](https://user-images.githubusercontent.com/97498663/182019566-69907dad-55b0-4f53-9470-e30e00b205dd.gif)
+
+![정렬](https://user-images.githubusercontent.com/97498663/182019590-a5281b66-7e2c-4a3e-949b-f0d72c60b839.gif)
 
 
 ### 🐥 협업 툴
