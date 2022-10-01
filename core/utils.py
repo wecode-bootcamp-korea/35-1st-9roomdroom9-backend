@@ -76,3 +76,18 @@ def accessCkeck(func):
 def checkQuantity(quantity,value):
     if quantity > ProductOption.objects.get(id=value).stock:
         raise ValueError
+
+def get_product_list(products):
+    product_list =  [{
+        'id'      : product.id,
+        'name'    : product.name,
+        'price'   : product.price,
+        'is_green': product.is_green,
+        'is_best' : product.is_best,
+        'images'  : [{
+            'id' : image.id,
+            'url': image.url
+            } for image in product.productimage_set.all()]
+    } for product in products]
+    
+    return product_list

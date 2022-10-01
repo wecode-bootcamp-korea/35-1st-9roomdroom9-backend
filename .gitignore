@@ -408,3 +408,6 @@ csv
 decorators.py
 products.csv
 users.csv
+
+poetry.lock
+pyproject.toml

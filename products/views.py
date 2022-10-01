@@ -2,32 +2,18 @@ from django.http  import JsonResponse
 from django.views import View
 
 from .models import Product, Category
+from core.utils import get_product_list
 
 class MainPageView(View):
     def get(self, request):
-        def get_list(products):
-            product_list =  [{
-                'id'      : product.id,
-                'name'    : product.name,
-                'price'   : product.price,
-                'is_green': product.is_green,
-                'is_best' : product.is_best,
-                'images'  : [{
-                    'id' : image.id,
-                    'url': image.url
-                    } for image in product.productimage_set.all()]
-            } for product in products]
-            
-            return product_list
-
         new_products   = Product.objects.all().prefetch_related('productimage_set').order_by('-created_at')[:8]
         best_products  = Product.objects.filter(is_best = True).prefetch_related('productimage_set').order_by('-created_at')[:8] 
         green_products = Product.objects.filter(is_green = True).prefetch_related('productimage_set').order_by('-created_at')[:8]
 
         return JsonResponse({
-            'new_products'  : get_list(new_products),
-            'best_products' : get_list(best_products),
-            'green_products': get_list(green_products)}, status=200)
+            'new_products'  : get_product_list(new_products),
+            'best_products' : get_product_list(best_products),
+            'green_products': get_product_list(green_products)}, status=200)
 
 class ProductListView(View):
     def get(self, request, category_id):
@@ -58,17 +44,7 @@ class ProductListView(View):
 
             products = products.prefetch_related('productimage_set').order_by(sort_by[request.GET.get('sorting', None)])[ offset : offset + limit ]
 
-            products_data = [{
-                    'id'      : product.id,
-                    'name'    : product.name,
-                    'price'   : product.price,
-                    'is_green': product.is_green,
-                    'is_best' : product.is_best,
-                    'images'  : [{
-                        'id' : image.id,
-                        'url': image.url
-                        } for image in product.productimage_set.all()]
-                } for product in products]
+            products_data = get_product_list(products)
 
             return JsonResponse({
                 'category_data': category_data,
