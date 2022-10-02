@@ -39,17 +39,17 @@ def checkEmailExist(value):
 
 def checkMobileExist(value):
     if User.objects.filter(mobile_number = value).exists():
-         raise ValueError("EXIST_MOBILE_NUMBER")
+        raise ValueError("EXIST_MOBILE_NUMBER")
 
 def hash(value):
     hashed = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     return hashed
 
 def checkPassword(incomePw, recordedPw):
-     encoded_password = incomePw.encode('utf-8')
-     user_password    = recordedPw.encode('utf-8')
-     if not bcrypt.checkpw(encoded_password, user_password):
-         raise ValueError("INVALID_USER")
+    encoded_password = incomePw.encode('utf-8')
+    user_password    = recordedPw.encode('utf-8')
+    if not bcrypt.checkpw(encoded_password, user_password):
+        raise ValueError("INVALID_USER")
 
 def createToken(value):
     token = jwt.encode({'id': value}, settings.SECRET_KEY, settings.ALGORITHM)
