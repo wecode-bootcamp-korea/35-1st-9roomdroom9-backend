@@ -39,17 +39,17 @@ def checkEmailExist(value):
 
 def checkMobileExist(value):
     if User.objects.filter(mobile_number = value).exists():
-         raise ValueError("EXIST_MOBILE_NUMBER")
+        raise ValueError("EXIST_MOBILE_NUMBER")
 
 def hash(value):
     hashed = bcrypt.hashpw(value.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
     return hashed
 
 def checkPassword(incomePw, recordedPw):
-     encoded_password = incomePw.encode('utf-8')
-     user_password    = recordedPw.encode('utf-8')
-     if not bcrypt.checkpw(encoded_password, user_password):
-         raise ValueError("INVALID_USER")
+    encoded_password = incomePw.encode('utf-8')
+    user_password    = recordedPw.encode('utf-8')
+    if not bcrypt.checkpw(encoded_password, user_password):
+        raise ValueError("INVALID_USER")
 
 def createToken(value):
     token = jwt.encode({'id': value}, settings.SECRET_KEY, settings.ALGORITHM)
@@ -76,3 +76,18 @@ def accessCkeck(func):
 def checkQuantity(quantity,value):
     if quantity > ProductOption.objects.get(id=value).stock:
         raise ValueError
+
+def get_product_list(products):
+    product_list =  [{
+        'id'      : product.id,
+        'name'    : product.name,
+        'price'   : product.price,
+        'is_green': product.is_green,
+        'is_best' : product.is_best,
+        'images'  : [{
+            'id' : image.id,
+            'url': image.url
+            } for image in product.productimage_set.all()]
+    } for product in products]
+    
+    return product_list
