@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 
-from .models import Product, Category
+from .models import Product, Category, ProductImage
 
 class ProductDetailTest(TestCase):
     def setUp(self):
@@ -17,6 +17,18 @@ class ProductDetailTest(TestCase):
             is_best     = False,
             category_id = 1
         )
+        ProductImage.objects.bulk_create([
+            ProductImage(
+                id = 1,
+                url = 'url1',
+                product_id = 1
+            ),
+            ProductImage(
+                id = 2, 
+                url = 'url2',
+                product_id =1
+            )
+        ])
 
     def tearDown(self):
         Category.objects.all().delete()
@@ -32,10 +44,19 @@ class ProductDetailTest(TestCase):
             'result' : {
                 'id'      : 1,
                 'name'    : 'testproduct',
-                'price'   : '1234.56',
+                'price'   : '1234.56', # decimal 타입은 문자열로 인식
                 'is_green': False,
                 'is_best' : False,
-                'images'  : [],
+                'images'  : [
+                    {
+                        'id' : 1,
+                        'url': 'url1'
+                    },
+                    {
+                        'id' : 2,
+                        'url': 'url2'
+                    }
+                ],
                 'options' : [],
             }
         })
