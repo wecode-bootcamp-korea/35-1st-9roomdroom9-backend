@@ -62,6 +62,8 @@ class ProductDetailTest(TestCase):
         Category.objects.all().delete() # 얘만 삭제하면 cascade되지만 혹시나해서 다삭제,,,,
         Product.objects.all().delete()
         ProductImage.objects.all().delete()
+        Option.objects.all().delete()
+        ProductOption.objects.all().delete()
 
     def test_success_productdetailview_get(self):
         client   = Client()
