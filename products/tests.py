@@ -1,7 +1,6 @@
-from urllib import response
 from django.test import TestCase, Client
 
-from .models import Product, Category, ProductImage
+from .models import Product, Category, ProductImage, Option, ProductOption
 
 class ProductDetailTest(TestCase):
     def setUp(self):
@@ -20,24 +19,52 @@ class ProductDetailTest(TestCase):
         )
         ProductImage.objects.bulk_create([
             ProductImage(
-                id = 1,
-                url = 'url1',
+                id         = 1,
+                url        = 'url1',
                 product_id = 1
             ),
             ProductImage(
-                id = 2, 
-                url = 'url2',
-                product_id =1
+                id         = 2,
+                url        = 'url2',
+                product_id = 1
+            )
+        ])
+        Option.objects.bulk_create([
+            Option(
+                id   = 1,
+                name = 'option1'
+            ),
+            Option(
+                id   = 2,
+                name = 'option2'
+            ),
+            Option(
+                id   = 3,
+                name = 'option3'
+            )
+        ])
+        ProductOption.objects.bulk_create([
+            ProductOption(
+                id         = 1,
+                stock      = 100,
+                product_id = 1,
+                option_id  = 1
+            ),
+            ProductOption(
+                id         = 2,
+                stock      = 50,
+                product_id = 1,
+                option_id  = 2
             )
         ])
 
     def tearDown(self):
-        Category.objects.all().delete()
+        Category.objects.all().delete() # 얘만 삭제하면 cascade되지만 혹시나해서 다삭제,,,,
         Product.objects.all().delete()
+        ProductImage.objects.all().delete()
 
     def test_success_productdetailview_get(self):
-        client = Client()
-
+        client   = Client()
         response = client.get('/products/detail/1')
 
         self.assertEqual(response.status_code, 200)
@@ -58,9 +85,23 @@ class ProductDetailTest(TestCase):
                         'url': 'url2'
                     }
                 ],
-                'options' : [],
+                'options' : [
+                    {
+                        'option_id'           : 1,
+                        'name'                : 'option1',
+                        'product_option_id'   : 1,
+                        'product_option_stock': 100
+                    },
+                    {
+                        'option_id'           : 2,
+                        'name'                : 'option2',
+                        'product_option_id'   : 2,
+                        'product_option_stock': 50
+                    }
+                ],
             }
         })
+
     def test_fail_productdetailview_get_product_not_exist(self):
         client   = Client()
         response = client.get('/products/detail/2')
