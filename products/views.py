@@ -85,4 +85,4 @@ class ProductDetailView(View):
             return JsonResponse({'result': result}, status=200)
             
         except Product.DoesNotExist:
-            return JsonResponse({'message': 'PRODUCT_DOES_NOT_EXIST'}, status=400)
+            return JsonResponse({'message': 'PRODUCT_DOES_NOT_EXIST'}, status=404)

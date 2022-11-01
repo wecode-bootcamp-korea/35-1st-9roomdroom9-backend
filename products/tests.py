@@ -65,7 +65,7 @@ class ProductDetailTest(TestCase):
         client   = Client()
         response = client.get('/products/detail/2')
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {
             'message': 'PRODUCT_DOES_NOT_EXIST'
         })
