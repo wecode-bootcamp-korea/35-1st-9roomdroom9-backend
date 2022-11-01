@@ -1,3 +1,4 @@
+from urllib import response
 from django.test import TestCase, Client
 
 from .models import Product, Category, ProductImage
@@ -59,4 +60,12 @@ class ProductDetailTest(TestCase):
                 ],
                 'options' : [],
             }
+        })
+    def test_fail_productdetailview_get_product_not_exist(self):
+        client   = Client()
+        response = client.get('/products/detail/2')
+
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {
+            'message': 'PRODUCT_DOES_NOT_EXIST'
         })
