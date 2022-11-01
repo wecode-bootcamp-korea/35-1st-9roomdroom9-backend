@@ -11,6 +11,7 @@ from products.models import ProductImage
 class CartView(View):
     @accessCkeck
     def post(self, request):
+        """carts에 post요청이 오면 카트생성"""
         try:
             data           = json.loads(request.body)
             user_id        = request.user.id
