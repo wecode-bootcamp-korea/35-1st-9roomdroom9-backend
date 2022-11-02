@@ -1,3 +1,4 @@
+from urllib import response
 from django.test import TestCase, Client
 
 from .models import Product, Category, ProductImage, Option, ProductOption
@@ -111,4 +112,72 @@ class ProductDetailTest(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {
             'message': 'PRODUCT_DOES_NOT_EXIST'
+        })
+
+class ProductListTest(TestCase):
+    def setUp(self):
+        Category.objects.create(
+            id          = 1000,
+            name        = 'all',
+            description = '전체'
+        )
+        Category.objects.create(
+            id          = 1,
+            name        = '필기',
+            description = '카테고리1'
+        )
+        Category.objects.create(
+            id          = 2,
+            name        = '문방구',
+            description = '카테고리2'
+        )
+        products1 = [
+            Product(
+                id          = i,
+                name        = 'testproduct',
+                price       = 1234.56,
+                is_green    = False,
+                is_best     = False,
+                category_id = 1
+            ) for i in range(1, 6)
+        ]
+        products2 = [
+            Product(
+                id          = i,
+                name        = 'testproduct',
+                price       = 1234.56,
+                is_green    = False,
+                is_best     = False,
+                category_id = 2
+            ) for i in range(6, 11)
+        ]
+        Product.objects.bulk_create(products1)
+        Product.objects.bulk_create(products2)
+
+    def tearDown(self):
+        Category.objects.all().delete()
+
+    def test_success_get_all_product_list(self):
+        client = Client()
+        response = client.get('/products/1000')
+
+        category_data = {
+            'id'            : 1000,
+            'name'          : 'all',
+            'description'   : '전체',
+            'total_products': 10
+        }
+        products_data = [{
+            'id'      : i,
+            'name'    : 'testproduct',
+            'price'   : '1234.56',
+            'is_green': False,
+            'is_best' : False,
+            'images'  : []
+        } for i in range(1, 11)]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {
+            'category_data': category_data,
+            'products_data': products_data
         })
