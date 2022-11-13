@@ -158,7 +158,7 @@ class ProductListTest(TestCase):
         Category.objects.all().delete()
 
     def test_success_get_all_product_list(self):
-        client = Client()
+        client   = Client()
         response = client.get('/products/1000')
 
         category_data = {
@@ -175,6 +175,31 @@ class ProductListTest(TestCase):
             'is_best' : False,
             'images'  : []
         } for i in range(1, 11)]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {
+            'category_data': category_data,
+            'products_data': products_data
+        })
+    
+    def test_success_get_product_list_category_2(self):
+        client   = Client()
+        response = client.get('/products/2')
+
+        category_data = {
+            'id'            : 2,
+            'name'          : '문방구',
+            'description'   : '카테고리2',
+            'total_products': 5
+        }
+        products_data = [{
+            'id'      : i,
+            'name'    : 'testproduct',
+            'price'   : '1234.56',
+            'is_green': False,
+            'is_best' : False,
+            'images'  : []
+        } for i in range(6, 11)]
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {
